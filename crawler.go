@@ -3,9 +3,9 @@ package bitcoinWallet
 import (
 	"errors"
 	"fmt"
-	"github.com/Amirilidan78/bitcoin-wallet/blockDaemon"
-	"github.com/Amirilidan78/bitcoin-wallet/blockDaemon/response"
-	"github.com/Amirilidan78/bitcoin-wallet/enums"
+	"github.com/ranjbar-dev/bitcoin-wallet/blockDaemon"
+	"github.com/ranjbar-dev/bitcoin-wallet/blockDaemon/response"
+	"github.com/ranjbar-dev/bitcoin-wallet/enums"
 	"sync"
 	"time"
 )

@@ -1,7 +1,7 @@
 package test
 
 import (
-	BitcoinWallet "github.com/Amirilidan78/bitcoin-wallet"
+	BitcoinWallet "github.com/ranjbar-dev/bitcoin-wallet"
 	"testing"
 )
 

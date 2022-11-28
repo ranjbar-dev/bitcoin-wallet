@@ -1,8 +1,8 @@
 package test
 
 import (
-	bitcoinWallet "github.com/Amirilidan78/bitcoin-wallet"
-	"github.com/Amirilidan78/bitcoin-wallet/enums"
+	bitcoinWallet "github.com/ranjbar-dev/bitcoin-wallet"
+	"github.com/ranjbar-dev/bitcoin-wallet/enums"
 )
 
 var node = enums.TEST_NODE

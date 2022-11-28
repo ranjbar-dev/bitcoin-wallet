@@ -1,7 +1,7 @@
 package blockDaemon
 
 import (
-	"github.com/Amirilidan78/bitcoin-wallet/blockDaemon/response"
+	"github.com/ranjbar-dev/bitcoin-wallet/blockDaemon/response"
 	"strconv"
 )
 
