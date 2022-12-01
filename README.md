@@ -3,7 +3,7 @@ bitcoin wallet package for creating and generating wallet, transferring BTC, get
 
 ### Installation
 ```
-go get github.com/ranjbar-dev/bitcoin-wallet@v1.0.3
+go get github.com/ranjbar-dev/bitcoin-wallet@v1.0.4
 ```
 
 ### Supported nodes
