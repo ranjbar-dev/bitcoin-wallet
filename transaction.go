@@ -48,7 +48,7 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 			break
 		}
 
-		if record.Mined.Confirmations > 2 {
+		if record.Mined.Confirmations >= 1 {
 
 			final = append(final, record)
 
@@ -91,7 +91,7 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 	if err != nil {
 		return nil, errors.New("vin err " + err.Error())
 	}
-	if totalAmount < amount || len(utxoList) == 0 {
+	if len(utxoList) == 0 {
 		return nil, errors.New("insufficient balance")
 	}
 
