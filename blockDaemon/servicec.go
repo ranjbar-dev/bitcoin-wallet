@@ -15,6 +15,7 @@ type BlockDaemon interface {
 	AddressTxs(address string) (response.AddressTransactionResponse, error)
 	Tx(hash string) (response.Transaction, error)
 	Broadcast(raw string) (response.BroadcastTransactionResponse, error)
+	EstimateFee() (response.EstimateFee, error)
 }
 
 type blockDaemon struct {

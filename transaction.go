@@ -32,7 +32,7 @@ func getAddressUTXO(chain *chaincfg.Params, address string) ([]response.UTXO, er
 	return res.Data, nil
 }
 
-func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount int64, fee int64) ([]response.UTXO, int64, error) {
+func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount int64) ([]response.UTXO, int64, error) {
 
 	records, err := getAddressUTXO(chain, address)
 	if err != nil {
@@ -44,7 +44,7 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 
 	for _, record := range records {
 
-		if total >= (amount + fee) {
+		if total >= amount {
 			break
 		}
 
@@ -59,7 +59,7 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 	return final, total, nil
 }
 
-func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress string, privateKey *btcec.PrivateKey, toAddress string, amount int64, fee int64) (*wire.MsgTx, error) {
+func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress string, privateKey *btcec.PrivateKey, toAddress string, amount int64) (*wire.MsgTx, error) {
 
 	fromAddr, err := btcutil.DecodeAddress(fromAddress, chain)
 	if err != nil {
@@ -87,7 +87,7 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 		return nil, errors.New("fromAddrByte PayToAddrScript err " + err.Error())
 	}
 
-	utxoList, totalAmount, err := prepareUTXOForTransaction(chain, fromAddress, amount, fee)
+	utxoList, totalAmount, err := prepareUTXOForTransaction(chain, fromAddress, amount)
 	if err != nil {
 		return nil, errors.New("vin err " + err.Error())
 	}
@@ -95,7 +95,7 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 		return nil, errors.New("insufficient balance")
 	}
 
-	t, err := createTransactionInputsAndSign(privateKey, utxoList, fromAddrByte, fromAddrScriptByte, toAddrByte, totalAmount, amount, fee)
+	t, err := createTransactionInputsAndSign(chain, privateKey, utxoList, fromAddrByte, fromAddrScriptByte, toAddrByte, totalAmount, amount)
 	if err != nil {
 		return nil, errors.New("vin err " + err.Error())
 	}
@@ -103,7 +103,19 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 	return t, nil
 }
 
-func createTransactionInputsAndSign(privateKey *btcec.PrivateKey, utxos []response.UTXO, fromAddressByte []byte, fromAddressScriptByte []byte, toAddressByte []byte, totalAmount int64, amount int64, fee int64) (*wire.MsgTx, error) {
+func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.PrivateKey, utxos []response.UTXO, fromAddressByte []byte, fromAddressScriptByte []byte, toAddressByte []byte, totalAmount int64, amount int64) (*wire.MsgTx, error) {
+
+	node := enums.MAIN_NODE
+	if &chaincfg.TestNet3Params == chain {
+		node = enums.TEST_NODE
+	}
+
+	bd := blockDaemon.NewBlockDaemonService(node.Config)
+
+	res, err := bd.EstimateFee()
+	if err != nil {
+		return nil, err
+	}
 
 	transaction := wire.NewMsgTx(2)
 
@@ -121,8 +133,12 @@ func createTransactionInputsAndSign(privateKey *btcec.PrivateKey, utxos []respon
 	}
 
 	// vout
-	changeAmount := totalAmount - amount - fee
 	transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
+
+	txSize := transaction.SerializeSize()
+
+	fee := int64(txSize * res.EstimatedFees.Slow)
+	changeAmount := totalAmount - amount - fee
 	if changeAmount > 0 {
 		transaction.AddTxOut(wire.NewTxOut(changeAmount, fromAddressByte))
 	}
@@ -176,10 +192,10 @@ func broadcastHex(chain *chaincfg.Params, hex string) (string, error) {
 	return res.Id, nil
 }
 
-func createSignAndBroadcastTransaction(chain *chaincfg.Params, privateKey *btcec.PrivateKey, fromAddress string, toAddress string, amount int64, fee int64) (string, error) {
+func createSignAndBroadcastTransaction(chain *chaincfg.Params, privateKey *btcec.PrivateKey, fromAddress string, toAddress string, amount int64) (string, error) {
 
 	// signed tx
-	tx, err := createTransactionAndSignTransaction(chain, fromAddress, privateKey, toAddress, amount, fee)
+	tx, err := createTransactionAndSignTransaction(chain, fromAddress, privateKey, toAddress, amount)
 	if err != nil {
 		return "", err
 	}

@@ -5,6 +5,16 @@ import (
 	"strconv"
 )
 
+func (bd *blockDaemon) EstimateFee() (response.EstimateFee, error) {
+
+	var res response.EstimateFee
+	path := "/tx/estimate_fee"
+
+	err := bd.get(path, &res)
+
+	return res, err
+}
+
 func (bd *blockDaemon) CurrentBlockNumber() (response.CurrentBlockNumberResponse, error) {
 
 	var res response.CurrentBlockNumberResponse

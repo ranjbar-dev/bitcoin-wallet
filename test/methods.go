@@ -13,7 +13,6 @@ var invalidOwnerAddress = "tb15111190u4dz48ctn1273333ss7fmspckag341fyp0"
 var validToAddress = "tb1q0r23g66m9rhhak8aahsg53wfp5egt2huuc4tnu"
 var invalidToAddress = "tb15111190u4dz48ctn1273333ss7fmspckag341fyp0"
 var btcAmount = int64(10000) // 0.00001
-var feeAmount = int64(10000) // 0.00001
 
 func wallet() *bitcoinWallet.BitcoinWallet {
 	w, _ := bitcoinWallet.CreateBitcoinWallet(node, validPrivateKey)
