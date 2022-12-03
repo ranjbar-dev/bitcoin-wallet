@@ -234,3 +234,8 @@ func (bw *BitcoinWallet) Transfer(toAddress string, amountInSatoshi int64) (stri
 
 	return createSignAndBroadcastTransaction(bw.Chain(), privateKey, bw.Address, toAddress, amountInSatoshi)
 }
+
+func (bw *BitcoinWallet) EstimateTransferFee(toAddress string, amountInSatoshi int64) (int64, error) {
+
+	return estimateTransactionFee(bw.Chain(), bw.Address, toAddress, amountInSatoshi)
+}

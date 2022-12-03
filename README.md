@@ -78,6 +78,12 @@ Example
 	
 ```
 
+Estimate transfer btc fee
+```
+feeInSatoshi,err := w.EstimateTransferFee("tb1q0r23g66m9rhhak8aahsg53wfp5egt2huuc4tnu",10000)
+feeInSatoshi // int64
+```
+
 Transfer btc
 ```
 txId,err := w.Transfer("tb1q0r23g66m9rhhak8aahsg53wfp5egt2huuc4tnu",10000)
