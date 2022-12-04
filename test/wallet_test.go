@@ -108,3 +108,16 @@ func TestTransfer(t *testing.T) {
 		t.Errorf("Transfer txId was incorect, got: %q, want: %q.", txId, "not nil")
 	}
 }
+
+// EstimateTransferFee test
+func TestEstimateTransferFee(t *testing.T) {
+	w := wallet()
+
+	fee, err := w.EstimateTransferFee(validToAddress, btcAmount)
+	if err != nil {
+		t.Errorf("EstimateTransferFee error was incorect, got: %q, want: %q.", err, "nil")
+	}
+	if fee == 0 {
+		t.Errorf("EstimateTransferFee fee was incorect, got: %q, want: %q.", fee, "not 0")
+	}
+}

@@ -15,7 +15,7 @@ func TestScanBlocks(t *testing.T) {
 func TestScanBlocksFromTo(t *testing.T) {
 	c := crawler()
 
-	res, err := c.ScanBlocksFromTo(2408191, 2408199)
+	res, err := c.ScanBlocksFromTo(2409273, 2409278)
 	if err != nil {
 		t.Errorf("ScanBlocks error was incorect, got: %q, want: %q.", err, "nil")
 	}
