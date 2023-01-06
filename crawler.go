@@ -47,16 +47,17 @@ func (c *Crawler) ScanBlocks(count int) ([]CrawlResult, error) {
 	}
 
 	blockNumber := int64(number)
+	current := blockNumber
 
 	wg.Add(1)
-	go c.getBlockData(&wg, client, &allTransactions, blockNumber)
+	go c.getBlockData(&wg, client, &allTransactions, blockNumber, current)
 
 	for i := count; i > 0; i-- {
 		// sleep to avoid 503 error
 		time.Sleep(100 * time.Millisecond)
 		blockNumber = blockNumber - 1
 		wg.Add(1)
-		go c.getBlockData(&wg, client, &allTransactions, blockNumber)
+		go c.getBlockData(&wg, client, &allTransactions, blockNumber, current)
 	}
 
 	wg.Wait()
@@ -82,7 +83,7 @@ func (c *Crawler) ScanBlocksFromTo(from int, to int) ([]CrawlResult, error) {
 		// sleep to avoid 503 error
 		time.Sleep(100 * time.Millisecond)
 		wg.Add(1)
-		go c.getBlockData(&wg, client, &allTransactions, int64(i))
+		go c.getBlockData(&wg, client, &allTransactions, int64(i), blockNumber)
 	}
 
 	wg.Wait()
@@ -90,7 +91,7 @@ func (c *Crawler) ScanBlocksFromTo(from int, to int) ([]CrawlResult, error) {
 	return c.prepareCrawlResultFromTransactions(allTransactions), nil
 }
 
-func (c *Crawler) getBlockData(wg *sync.WaitGroup, client blockDaemon.BlockDaemon, allTransactions *[][]CrawlTransaction, num int64) {
+func (c *Crawler) getBlockData(wg *sync.WaitGroup, client blockDaemon.BlockDaemon, allTransactions *[][]CrawlTransaction, num int64, currentBlockNumber int64) {
 
 	defer wg.Done()
 
@@ -101,10 +102,10 @@ func (c *Crawler) getBlockData(wg *sync.WaitGroup, client blockDaemon.BlockDaemo
 	}
 
 	// check block for transaction
-	*allTransactions = append(*allTransactions, c.extractOurTransactionsFromBlock(block))
+	*allTransactions = append(*allTransactions, c.extractOurTransactionsFromBlock(block, currentBlockNumber))
 }
 
-func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse) []CrawlTransaction {
+func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse, currentBlockNumber int64) []CrawlTransaction {
 
 	var txs []CrawlTransaction
 
@@ -129,7 +130,8 @@ func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse) 
 		}
 
 		txId := transaction.Id
-		confirmations := transaction.Confirmations
+
+		confirmations := currentBlockNumber - int64(block.Number)
 
 		for _, ourAddress := range c.Addresses {
 			if ourAddress == toAddress || ourAddress == fromAddress {
