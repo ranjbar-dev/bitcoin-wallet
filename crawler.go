@@ -118,33 +118,27 @@ func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse, 
 			fromAddress = item.Source
 		}
 
-		toAddress := ""
-		amount := 0
-		for _, item := range c.getTxOutputs(transaction) {
-			for _, ourAddress := range c.Addresses {
-				if ourAddress == item.Destination {
-					toAddress = item.Destination
-					amount = item.Amount
-				}
-			}
-		}
-
 		txId := transaction.Id
 
 		confirmations := currentBlockNumber - int64(block.Number) + 1
 
-		for _, ourAddress := range c.Addresses {
-			if ourAddress == toAddress || ourAddress == fromAddress {
-				txs = append(txs, CrawlTransaction{
-					TxId:          txId,
-					FromAddress:   fromAddress,
-					ToAddress:     toAddress,
-					Amount:        uint64(amount),
-					Confirmations: confirmations,
-					Symbol:        symbol,
-				})
+		for _, item := range c.getTxOutputs(transaction) {
+			for _, ourAddress := range c.Addresses {
+				if ourAddress == item.Destination {
+
+					txs = append(txs, CrawlTransaction{
+						TxId:          txId,
+						FromAddress:   fromAddress,
+						ToAddress:     item.Destination,
+						Amount:        uint64(item.Amount),
+						Confirmations: confirmations,
+						Symbol:        symbol,
+					})
+
+				}
 			}
 		}
+
 	}
 
 	return txs
