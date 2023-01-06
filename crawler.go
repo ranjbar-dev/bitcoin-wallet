@@ -131,7 +131,7 @@ func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse, 
 
 		txId := transaction.Id
 
-		confirmations := currentBlockNumber - int64(block.Number)
+		confirmations := currentBlockNumber - int64(block.Number) + 1
 
 		for _, ourAddress := range c.Addresses {
 			if ourAddress == toAddress || ourAddress == fromAddress {
@@ -140,7 +140,7 @@ func (c *Crawler) extractOurTransactionsFromBlock(block response.BlockResponse, 
 					FromAddress:   fromAddress,
 					ToAddress:     toAddress,
 					Amount:        uint64(amount),
-					Confirmations: int64(confirmations),
+					Confirmations: confirmations,
 					Symbol:        symbol,
 				})
 			}
