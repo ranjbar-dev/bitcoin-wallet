@@ -44,9 +44,14 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 
 	for _, record := range sortUTXOsASC(records) {
 
+		if record.IsSpent {
+			continue
+		}
+
 		recordValue := int64(record.Value)
 
-		if recordValue-500 > amount {
+		// recordValue-amount > 3000 to avoid dust error
+		if recordValue > amount && recordValue-amount > 6000 {
 			total = recordValue
 			final = []response.UTXO{record}
 			return final, total, nil
@@ -55,7 +60,12 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 
 	for _, record := range sortUTXOsDESC(records) {
 
-		if total >= amount {
+		if record.IsSpent {
+			continue
+		}
+
+		// record.Value-amount > 3000 to avoid dust error
+		if total >= amount && int64(record.Value)-amount > 6000 {
 			break
 		}
 
@@ -152,7 +162,7 @@ func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.Pr
 
 	changeAmount := totalAmount - amount - fee
 
-	if changeAmount > 0 {
+	if changeAmount > 500 {
 		transaction.AddTxOut(wire.NewTxOut(changeAmount, fromAddressByte))
 	}
 
