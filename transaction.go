@@ -42,24 +42,15 @@ func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount in
 	var final []response.UTXO
 	var total int64
 
-	canTransferWithOneUTXO := false
-	selectedUTXOValue := int64(0)
-
 	for _, record := range sortUTXOsASC(records) {
 
 		recordValue := int64(record.Value)
 
-		if selectedUTXOValue == 0 || selectedUTXOValue > recordValue {
-			if recordValue-500 > amount {
-				total = recordValue
-				final = []response.UTXO{record}
-				canTransferWithOneUTXO = true
-			}
+		if recordValue-500 > amount {
+			total = recordValue
+			final = []response.UTXO{record}
+			return final, total, nil
 		}
-	}
-
-	if canTransferWithOneUTXO {
-		return final, total, nil
 	}
 
 	for _, record := range sortUTXOsDESC(records) {
