@@ -59,5 +59,7 @@ func estimateTransactionFee(chain *chaincfg.Params, fromAddress string, toAddres
 
 	transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
 
-	return int64(transaction.SerializeSize() * res.EstimatedFees.Slow), nil
+	transactionSizeInByte := transaction.SerializeSize() + 110
+
+	return int64(transactionSizeInByte * res.EstimatedFees.Slow), nil
 }

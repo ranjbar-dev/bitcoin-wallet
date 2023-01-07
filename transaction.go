@@ -135,10 +135,12 @@ func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.Pr
 	// vout
 	transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
 
-	txSize := transaction.SerializeSize()
+	txSize := transaction.SerializeSize() + 110
 
 	fee := int64(txSize * res.EstimatedFees.Slow)
+
 	changeAmount := totalAmount - amount - fee
+
 	if changeAmount > 0 {
 		transaction.AddTxOut(wire.NewTxOut(changeAmount, fromAddressByte))
 	}
