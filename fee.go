@@ -2,6 +2,7 @@ package bitcoinWallet
 
 import (
 	"errors"
+	"fmt"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -60,6 +61,9 @@ func estimateTransactionFee(chain *chaincfg.Params, fromAddress string, toAddres
 	transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
 
 	transactionSizeInByte := transaction.SerializeSize() + 110
+
+	fmt.Println("transactionSizeInByte")
+	fmt.Println(transactionSizeInByte)
 
 	return int64(transactionSizeInByte * res.EstimatedFees.Slow), nil
 }
