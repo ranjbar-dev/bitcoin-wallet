@@ -65,12 +65,25 @@ func (bd *blockDaemon) AddressBalance(address string) (response.BalanceResponse,
 	return res, err
 }
 
-func (bd *blockDaemon) AddressUTXO(address string) (response.UTXOResponse, error) {
+func (bd *blockDaemon) AddressUTXO(address string, nextPageToken string) (response.UTXOResponse, error) {
 
 	var res response.UTXOResponse
-	path := "/account/" + address + "/utxo"
+	path := "/account/" + address + "/utxo?page_size=100&spent=false"
+	if nextPageToken != "" {
+		path += "&page_token=" + nextPageToken
+	}
 
 	err := bd.get(path, &res)
+
+	if res.Meta.Paging.NextPageToken != "" {
+		nextPageUtxos, err := bd.AddressUTXO(address, res.Meta.Paging.NextPageToken)
+		if err != nil {
+			return res, err
+		}
+		for _, datum := range nextPageUtxos.Data {
+			res.Data = append(res.Data, datum)
+		}
+	}
 
 	return res, err
 }

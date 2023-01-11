@@ -11,7 +11,7 @@ type BlockDaemon interface {
 	BlockByNumber(number int64) (response.BlockResponse, error)
 	BlockByHash(hash string) (response.BlockResponse, error)
 	AddressBalance(address string) (response.BalanceResponse, error)
-	AddressUTXO(address string) (response.UTXOResponse, error)
+	AddressUTXO(address string, nextPageToken string) (response.UTXOResponse, error)
 	AddressTxs(address string) (response.AddressTransactionResponse, error)
 	Tx(hash string) (response.Transaction, error)
 	Broadcast(raw string) (response.BroadcastTransactionResponse, error)

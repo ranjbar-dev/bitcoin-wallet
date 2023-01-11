@@ -15,72 +15,7 @@ import (
 	"github.com/ranjbar-dev/bitcoin-wallet/enums"
 )
 
-func getAddressUTXO(chain *chaincfg.Params, address string) ([]response.UTXO, error) {
-
-	node := enums.MAIN_NODE
-	if &chaincfg.TestNet3Params == chain {
-		node = enums.TEST_NODE
-	}
-
-	bd := blockDaemon.NewBlockDaemonService(node.Config)
-
-	res, err := bd.AddressUTXO(address)
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Data, nil
-}
-
-func prepareUTXOForTransaction(chain *chaincfg.Params, address string, amount int64) ([]response.UTXO, int64, error) {
-
-	records, err := getAddressUTXO(chain, address)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var final []response.UTXO
-	var total int64
-
-	for _, record := range sortUTXOsASC(records) {
-
-		if record.IsSpent {
-			continue
-		}
-
-		recordValue := int64(record.Value)
-
-		// recordValue-amount > 3000 to avoid dust error
-		if recordValue > amount && recordValue-amount > 6000 {
-			total = recordValue
-			final = []response.UTXO{record}
-			return final, total, nil
-		}
-	}
-
-	for _, record := range sortUTXOsDESC(records) {
-
-		if record.IsSpent {
-			continue
-		}
-
-		// record.Value-amount > 3000 to avoid dust error
-		if total >= amount && int64(record.Value)-amount > 6000 {
-			break
-		}
-
-		if record.Mined.Confirmations >= 1 {
-
-			final = append(final, record)
-
-			total += int64(record.Value)
-		}
-	}
-
-	return final, total, nil
-}
-
-func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress string, privateKey *btcec.PrivateKey, toAddress string, amount int64) (*wire.MsgTx, error) {
+func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress string, privateKey *btcec.PrivateKey, toAddress string, amount int64, sweep bool) (*wire.MsgTx, error) {
 
 	fromAddr, err := btcutil.DecodeAddress(fromAddress, chain)
 	if err != nil {
@@ -108,15 +43,28 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 		return nil, errors.New("fromAddrByte PayToAddrScript err " + err.Error())
 	}
 
-	utxoList, totalAmount, err := prepareUTXOForTransaction(chain, fromAddress, amount)
-	if err != nil {
-		return nil, errors.New("vin err " + err.Error())
-	}
-	if len(utxoList) == 0 {
-		return nil, errors.New("insufficient balance")
+	var utxoList []response.UTXO
+	var totalAmount int64
+
+	if sweep {
+		utxoList, totalAmount, err = prepareUTXOForSweepTransaction(chain, fromAddress)
+		if err != nil {
+			return nil, errors.New("vin err " + err.Error())
+		}
+		if len(utxoList) == 0 {
+			return nil, errors.New("insufficient balance")
+		}
+	} else {
+		utxoList, totalAmount, err = prepareUTXOForTransaction(chain, fromAddress, amount)
+		if err != nil {
+			return nil, errors.New("vin err " + err.Error())
+		}
+		if len(utxoList) == 0 {
+			return nil, errors.New("insufficient balance")
+		}
 	}
 
-	t, err := createTransactionInputsAndSign(chain, privateKey, utxoList, fromAddrByte, fromAddrScriptByte, toAddrByte, totalAmount, amount)
+	t, err := createTransactionInputsAndSign(chain, privateKey, utxoList, fromAddrByte, fromAddrScriptByte, toAddrByte, totalAmount, amount, sweep)
 	if err != nil {
 		return nil, errors.New("vin err " + err.Error())
 	}
@@ -124,7 +72,7 @@ func createTransactionAndSignTransaction(chain *chaincfg.Params, fromAddress str
 	return t, nil
 }
 
-func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.PrivateKey, utxos []response.UTXO, fromAddressByte []byte, fromAddressScriptByte []byte, toAddressByte []byte, totalAmount int64, amount int64) (*wire.MsgTx, error) {
+func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.PrivateKey, utxos []response.UTXO, fromAddressByte []byte, fromAddressScriptByte []byte, toAddressByte []byte, totalAmount int64, amount int64, sweep bool) (*wire.MsgTx, error) {
 
 	node := enums.MAIN_NODE
 	if &chaincfg.TestNet3Params == chain {
@@ -154,16 +102,27 @@ func createTransactionInputsAndSign(chain *chaincfg.Params, privateKey *btcec.Pr
 	}
 
 	// vout
-	transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
+	if sweep {
 
-	txSize := transaction.SerializeSize() + 110
+		txSize := transaction.SerializeSize() + 110
 
-	fee := int64(txSize * res.EstimatedFees.Slow)
+		fee := int64(txSize * res.EstimatedFees.Slow)
 
-	changeAmount := totalAmount - amount - fee
+		transaction.AddTxOut(wire.NewTxOut(totalAmount-fee, toAddressByte))
 
-	if changeAmount > 500 {
-		transaction.AddTxOut(wire.NewTxOut(changeAmount, fromAddressByte))
+	} else {
+
+		transaction.AddTxOut(wire.NewTxOut(amount, toAddressByte))
+
+		txSize := transaction.SerializeSize() + 110
+
+		fee := int64(txSize * res.EstimatedFees.Slow)
+
+		changeAmount := totalAmount - amount - fee
+		// to avoid dust
+		if changeAmount > 500 {
+			transaction.AddTxOut(wire.NewTxOut(changeAmount, fromAddressByte))
+		}
 	}
 
 	transaction.LockTime = 0
@@ -215,10 +174,10 @@ func broadcastHex(chain *chaincfg.Params, hex string) (string, error) {
 	return res.Id, nil
 }
 
-func createSignAndBroadcastTransaction(chain *chaincfg.Params, privateKey *btcec.PrivateKey, fromAddress string, toAddress string, amount int64) (string, error) {
+func createSignAndBroadcastTransaction(chain *chaincfg.Params, privateKey *btcec.PrivateKey, fromAddress string, toAddress string, amount int64, sweep bool) (string, error) {
 
 	// signed tx
-	tx, err := createTransactionAndSignTransaction(chain, fromAddress, privateKey, toAddress, amount)
+	tx, err := createTransactionAndSignTransaction(chain, fromAddress, privateKey, toAddress, amount, sweep)
 	if err != nil {
 		return "", err
 	}

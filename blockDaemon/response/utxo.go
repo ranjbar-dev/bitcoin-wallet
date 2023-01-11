@@ -3,6 +3,11 @@ package response
 type UTXOResponse struct {
 	Total int    `json:"total"`
 	Data  []UTXO `json:"data"`
+	Meta  struct {
+		Paging struct {
+			NextPageToken string `json:"next_page_token"`
+		} `json:"paging"`
+	} `json:"meta"`
 }
 
 type UTXO struct {

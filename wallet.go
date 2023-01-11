@@ -201,7 +201,7 @@ func (bw *BitcoinWallet) UTXOs() ([]response.UTXO, error) {
 
 	var res []response.UTXO
 
-	utxos, err := bw.bd.AddressUTXO(bw.Address)
+	utxos, err := bw.bd.AddressUTXO(bw.Address, "")
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +232,17 @@ func (bw *BitcoinWallet) Transfer(toAddress string, amountInSatoshi int64) (stri
 		return "", err
 	}
 
-	return createSignAndBroadcastTransaction(bw.Chain(), privateKey, bw.Address, toAddress, amountInSatoshi)
+	return createSignAndBroadcastTransaction(bw.Chain(), privateKey, bw.Address, toAddress, amountInSatoshi, false)
+}
+
+func (bw *BitcoinWallet) SweepTransfer(toAddress string) (string, error) {
+
+	privateKey, err := bw.PrivateKeyBTCE()
+	if err != nil {
+		return "", err
+	}
+
+	return createSignAndBroadcastTransaction(bw.Chain(), privateKey, bw.Address, toAddress, 0, true)
 }
 
 func (bw *BitcoinWallet) EstimateTransferFee(toAddress string, amountInSatoshi int64) (int64, error) {
