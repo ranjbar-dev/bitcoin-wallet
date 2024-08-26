@@ -6,14 +6,17 @@ type Explorer interface {
 
 func NewTrezorExplorer() TrezorExplorer {
 
-	return TrezorExplorer{}
+	return TrezorExplorer{
+		baseURL: "https://btc1.trezor.io/api/v2",
+	}
 }
 
-func NewBlockdaemonExplorer(protocol string, network string) BlockdaemonExplorer {
+func NewBlockdaemonExplorer(protocol string, network string, apiKey string) BlockdaemonExplorer {
 
 	return BlockdaemonExplorer{
 		Protocol: protocol,
 		Network:  network,
-		ApiKey:   "im4YrpAa9tjvFcwlZDci22aQGzp4JtAqnQtdzcMXAIdj-Aoi",
+		baseURL:  "https://svc.blockdaemon.com/universal/v1",
+		ApiKey:   apiKey,
 	}
 }

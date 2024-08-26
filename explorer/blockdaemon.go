@@ -8,12 +8,11 @@ import (
 	httpclient "github.com/ranjbar-dev/bitcoin-wallet/httpClient"
 )
 
-const baseURL string = "https://svc.blockdaemon.com/universal/v1"
-
 type BlockdaemonExplorer struct {
 	Protocol string
 	Network  string
 	ApiKey   string
+	baseURL  string
 }
 
 type BlockdaemonBalanceResponse struct {
@@ -28,7 +27,7 @@ func (e BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
 		"Accept":    "application/json",
 	}
 
-	url := fmt.Sprintf("%s/%s/%s/account/%s", baseURL, e.Protocol, e.Network, address)
+	url := fmt.Sprintf("%s/%s/%s/account/%s", e.baseURL, e.Protocol, e.Network, address)
 
 	client := httpclient.NewHttpclient()
 
