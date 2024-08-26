@@ -6,7 +6,6 @@ import (
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
-	"github.com/ranjbar-dev/bitcoin-wallet/explorer"
 )
 
 // P2PKH address
@@ -30,9 +29,9 @@ func PrivateKeyToAddress(privateKey *ecdsa.PrivateKey) (string, error) {
 }
 
 // in satoshi
-func FetchAddressBalance(e explorer.Explorer, address string) (int, error) {
+func FetchAddressBalance(address string) (int, error) {
 
-	b, err := e.GetAddressBalance(address)
+	b, err := config.Explorer.GetAddressBalance(address)
 
 	if err != nil {
 		fmt.Println(err)

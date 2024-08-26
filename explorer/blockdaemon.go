@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	httpclient "github.com/ranjbar-dev/bitcoin-wallet/httpClient"
+	"github.com/ranjbar-dev/bitcoin-wallet/models"
 )
 
 type BlockdaemonExplorer struct {
@@ -54,4 +55,19 @@ func (e BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
 	}
 
 	return int(balance), nil
+}
+
+func (e BlockdaemonExplorer) GetCurrentBlockNumber() (int, error) {
+
+	return 0, nil
+}
+
+func (e BlockdaemonExplorer) GetCurrentBlockHash() (string, error) {
+
+	return "", nil
+}
+
+func (e BlockdaemonExplorer) GetBlockByNumber(int) (models.BlockChainBlock, error) {
+
+	return models.BlockChainBlock{}, nil
 }
