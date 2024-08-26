@@ -1,38 +1,47 @@
 package bitcoinwallet
 
-import "crypto/ecdsa"
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
+)
 
 func GeneratePrivateKey() (*ecdsa.PrivateKey, error) {
 
-	// TODO : implement
+	pk, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 
-	return nil, nil
+	return pk, err
 }
 
 func HexToPrivateKey(hex string) (*ecdsa.PrivateKey, error) {
 
-	// TODO : implement
+	pk, err := crypto.HexToECDSA(hex)
 
-	return nil, nil
+	return pk, err
 }
 
 func BytesToPrivateKey(bytes []byte) (*ecdsa.PrivateKey, error) {
 
-	// TODO : implement
+	pk, err := crypto.ToECDSA(bytes)
 
-	return nil, nil
+	return pk, err
 }
 
 func PrivateKeyToHex(privateKey *ecdsa.PrivateKey) (string, error) {
 
-	// TODO : implement
+	pkBytes := crypto.FromECDSA(privateKey)
 
-	return "", nil
+	pk := hexutil.Encode(pkBytes)[2:]
+
+	return pk, nil
 }
 
 func PrivateKeyToBytes(privateKey *ecdsa.PrivateKey) ([]byte, error) {
 
-	// TODO : implement
+	bytes := crypto.FromECDSA(privateKey)
 
-	return nil, nil
+	return bytes, nil
 }
