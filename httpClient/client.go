@@ -11,14 +11,14 @@ type Httpclient struct {
 	c *resty.Client
 }
 
-func (h *Httpclient) Client() *resty.Client {
+func (h *Httpclient) NewRequest() *resty.Request {
 
-	return h.c
+	return h.c.R()
 }
 
 func NewHttpclient() *Httpclient {
 
 	return &Httpclient{
-		c: resty.New().SetTimeout(time.Second * 5).SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}),
+		c: resty.New().SetTimeout(time.Second * 10).SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}),
 	}
 }
