@@ -3,10 +3,11 @@ package explorer
 import "github.com/ranjbar-dev/bitcoin-wallet/models"
 
 type Explorer interface {
-	GetAddressBalance(address string) (int, error)
+	GetAddressBalance(string) (int, error)
 	GetCurrentBlockNumber() (int, error)
 	GetCurrentBlockHash() (string, error)
-	GetBlockByNumber(int) (models.BlockChainBlock, error)
+	GetBlockByNumber(int) (models.Block, error)
+	GetAddressUTXOs(string, int) ([]models.UTXO, error)
 }
 
 func NewTrezorExplorer() TrezorExplorer {
@@ -16,12 +17,11 @@ func NewTrezorExplorer() TrezorExplorer {
 	}
 }
 
-func NewBlockdaemonExplorer(protocol string, network string, apiKey string) BlockdaemonExplorer {
+func NewBlockdaemonExplorer(network string, apiKey string) BlockdaemonExplorer {
 
 	return BlockdaemonExplorer{
-		Protocol: protocol,
-		Network:  network,
-		baseURL:  "https://svc.blockdaemon.com/universal/v1",
-		ApiKey:   apiKey,
+		Network: network,
+		baseURL: "https://svc.blockdaemon.com/universal/v1/bitcoin",
+		ApiKey:  apiKey,
 	}
 }

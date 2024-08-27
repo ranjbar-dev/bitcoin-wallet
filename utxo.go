@@ -1,16 +1,22 @@
 package bitcoinwallet
 
-type UTXO struct {
-	// TODO : implement
-}
+import (
+	"fmt"
 
-func FetchAddressUTXOs(address string) ([]UTXO, error) {
+	"github.com/ranjbar-dev/bitcoin-wallet/models"
+)
 
-	// use config to get explorer type and apikey
+func FetchAddressUTXOs(address string, timeOut int) ([]models.UTXO, error) {
 
-	// TODO : implement
+	if timeOut == 0 {
+		timeOut = 30
+	}
+	v, err := config.Explorer.GetAddressUTXOs(address, timeOut)
 
-	// TODO : support trezor and blockdaemon explorer
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 
-	return nil, nil
+	return v, nil
 }

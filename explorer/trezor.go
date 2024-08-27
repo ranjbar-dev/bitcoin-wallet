@@ -39,8 +39,10 @@ type TrezorBlockResponse struct {
 type BlockTxs struct {
 	TxID string `json:"txid"`
 	Vin  []struct {
-		N     int    `json:"n"`
-		Value string `json:"value"`
+		N         int      `json:"n"`
+		Addresses []string `json:"addresses"`
+		TxID      string   `json:"txid"`
+		Value     string   `json:"value"`
 	}
 	Vout []struct {
 		N         int      `json:"n"`
@@ -67,6 +69,14 @@ type TrezorCurrentBlockResponse struct {
 
 type BlockBook struct {
 	BestHeight int `json:"bestHeight"`
+}
+
+type TrezorUTXOsResponse struct {
+	TxID          string `json:"txid"`
+	Value         string `json:"value"`
+	Confirmations int    `json:"confirmations"`
+	Vout          int    `json:"vout"`
+	Height        int    `json:"height"`
 }
 
 func (e TrezorExplorer) GetAddressBalance(address string) (int, error) {
@@ -145,7 +155,7 @@ func (e TrezorExplorer) GetCurrentBlockHash() (string, error) {
 	return v.BlockHash, nil
 }
 
-func (e TrezorExplorer) GetBlockByNumber(num int) (models.BlockChainBlock, error) {
+func (e TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 
 	url := fmt.Sprintf("%s/block/%d", e.baseURL, num)
 
@@ -155,7 +165,7 @@ func (e TrezorExplorer) GetBlockByNumber(num int) (models.BlockChainBlock, error
 
 	if err != nil {
 		fmt.Println("Error", err)
-		return models.BlockChainBlock{}, err
+		return models.Block{}, err
 	}
 
 	var v TrezorBlockResponse
@@ -166,22 +176,106 @@ func (e TrezorExplorer) GetBlockByNumber(num int) (models.BlockChainBlock, error
 		fmt.Println(err)
 	}
 
-	return models.BlockChainBlock{
+	fmt.Println(v.Txs[2])
+
+	var txs []models.Transaction
+
+	for _, tx := range v.Txs {
+		var inputs []models.Input
+		for _, vin := range tx.Vin {
+			val, err := strconv.ParseInt(vin.Value, 10, 64)
+			if err != nil {
+				fmt.Println(err)
+				return models.Block{}, err
+			}
+			inputs = append(inputs, models.Input{
+				Address: vin.Addresses[0],
+				Value:   int(val),
+				Index:   vin.N,
+				TxID:    tx.TxID,
+			})
+		}
+
+		var outputs []models.Output
+
+		for _, vout := range tx.Vout {
+			val, err := strconv.ParseInt(vout.Value, 10, 64)
+
+			if err != nil {
+				fmt.Println(err)
+				return models.Block{}, err
+			}
+
+			outputs = append(outputs, models.Output{
+				Address: vout.Addresses[0],
+				Value:   int(val),
+				Index:   vout.N,
+			})
+		}
+
+		txs = append(txs, models.Transaction{
+			TxID:          tx.TxID,
+			BlockHash:     tx.BlockHash,
+			Confirmations: tx.Confirmations,
+			Inputs:        inputs,
+			Outputs:       outputs,
+		})
+	}
+
+	return models.Block{
 		Hash:              v.Hash,
-		Page:              v.Page,
-		TotalPages:        v.TotalPages,
 		PreviousBlockHash: v.PreviousBlockHash,
 		NextBlockHash:     v.NextBlockHash,
 		Height:            v.Height,
 		Confirmations:     v.Confirmations,
-		Size:              v.Size,
-		Time:              v.Time,
-		Version:           v.Version,
-		MerkleRoot:        v.MerkleRoot,
-		Nonce:             v.Nonce,
-		Bits:              v.Bits,
-		Difficulty:        v.Difficulty,
 		TxCount:           v.TxCount,
-		Txs:               []models.BlockTxs{},
+		Txs:               txs,
 	}, nil
+
+}
+
+func (e TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.UTXO, error) {
+
+	if timeOut == 0 {
+		timeOut = 30
+	}
+
+	url := fmt.Sprintf("%s/utxo/%s?confirmed=true", e.baseURL, address)
+
+	client := httpclient.NewHttpclient()
+
+	res, err := client.NewRequest().Get(url)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return nil, err
+	}
+
+	var v []TrezorUTXOsResponse
+
+	err = json.Unmarshal(res.Body(), &v)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	utxos := []models.UTXO{}
+
+	for _, v := range v {
+		val, err := strconv.ParseInt(v.Value, 10, 64)
+
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		utxos = append(utxos, models.UTXO{
+			Amount:        val,
+			TxID:          v.TxID,
+			Index:         uint32(v.Vout),
+			Confirmations: int(v.Confirmations),
+		})
+	}
+
+	return utxos, nil
 }

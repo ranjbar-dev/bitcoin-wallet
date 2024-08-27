@@ -30,13 +30,13 @@ func FetchCurrentBlockHash() (string, error) {
 	return hash, nil
 }
 
-func FetchBlockByNumber(num int) (models.BlockChainBlock, error) {
+func FetchBlockByNumber(num int) (models.Block, error) {
 
 	block, err := config.Explorer.GetBlockByNumber(num)
 
 	if err != nil {
 		fmt.Println(err)
-		return models.BlockChainBlock{}, err
+		return models.Block{}, err
 	}
 
 	return block, nil
