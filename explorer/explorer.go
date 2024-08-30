@@ -8,6 +8,7 @@ type Explorer interface {
 	GetCurrentBlockHash() (string, error)
 	GetBlockByNumber(int) (models.Block, error)
 	GetAddressUTXOs(string, int) ([]models.UTXO, error)
+	GetTransactionByTxID(txID string) (models.Transaction, error)
 }
 
 func NewTrezorExplorer() TrezorExplorer {

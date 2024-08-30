@@ -1,4 +1,4 @@
-package crawler
+package pricecrawler
 
 type Crawler interface {
 	GetBTCPrice() (float64, error)

@@ -3,6 +3,7 @@ package bitcoinwallet
 // return High, Medium, Low fee Satoshi/Byte
 func FetchEstimateFee() (float64, float64, float64, error) {
 
+	config.FeeCrawler.GetEstimatedFee()
 	// TODO : implement
 
 	// get estimate fee using this api: https://blockstream.info/api/fee-estimates

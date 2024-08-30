@@ -1,4 +1,4 @@
-package crawler
+package pricecrawler
 
 import (
 	"encoding/json"

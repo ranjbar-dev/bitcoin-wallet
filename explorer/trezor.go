@@ -279,3 +279,65 @@ func (e TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.U
 
 	return utxos, nil
 }
+
+func (e TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, error) {
+
+	url := fmt.Sprintf("%s/tx/%s", e.baseURL, txID)
+
+	client := httpclient.NewHttpclient()
+
+	res, err := client.NewRequest().Get(url)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return models.Transaction{}, err
+	}
+
+	var v BlockTxs
+
+	err = json.Unmarshal(res.Body(), &v)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var inputs []models.Input
+	for _, vin := range v.Vin {
+		val, err := strconv.ParseInt(vin.Value, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+			return models.Transaction{}, err
+		}
+		inputs = append(inputs, models.Input{
+			Address: vin.Addresses[0],
+			Value:   int(val),
+			Index:   vin.N,
+			TxID:    v.TxID,
+		})
+	}
+
+	var outputs []models.Output
+
+	for _, vout := range v.Vout {
+		val, err := strconv.ParseInt(vout.Value, 10, 64)
+
+		if err != nil {
+			fmt.Println(err)
+			return models.Transaction{}, err
+		}
+
+		outputs = append(outputs, models.Output{
+			Address: vout.Addresses[0],
+			Value:   int(val),
+			Index:   vout.N,
+		})
+	}
+
+	return models.Transaction{
+		TxID:          v.TxID,
+		BlockHash:     v.BlockHash,
+		Confirmations: v.Confirmations,
+		Inputs:        inputs,
+		Outputs:       outputs,
+	}, nil
+}

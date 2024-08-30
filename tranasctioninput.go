@@ -5,7 +5,7 @@ import "crypto/ecdsa"
 // TODO : change types these are just hints
 type TransactionInput struct {
 	PrivateKey any // owner of utxo privatekey
-	Value      any // utxo value in satoshi
+	Value      int // utxo value in satoshi
 	Index      any // utxo index
 	TxId       any // utxo txid
 }

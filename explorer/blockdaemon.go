@@ -328,3 +328,74 @@ func (e BlockdaemonExplorer) GetAddressUTXOs(address string, timeOut int) ([]mod
 
 	return utxos, nil
 }
+
+func (e BlockdaemonExplorer) GetTransactionByTxID(txID string) (models.Transaction, error) {
+	headers := map[string]string{
+		"X-API-Key": e.ApiKey,
+		"Accept":    "application/json",
+	}
+
+	url := fmt.Sprintf("%s/%s/tx/%s", e.baseURL, e.Network, txID)
+
+	client := httpclient.NewHttpclient()
+
+	res, err := client.NewRequest().SetHeaders(headers).Get(url)
+
+	if err != nil {
+		fmt.Println(err)
+		return models.Transaction{}, err
+	}
+
+	var v Txs
+
+	err = json.Unmarshal(res.Body(), &v)
+
+	if err != nil {
+		fmt.Println(err)
+		return models.Transaction{}, err
+	}
+
+	var inputs []models.Input
+	var outputs []models.Output
+
+	totalIputs := 0
+	totalOutputs := 0
+
+	for _, event := range v.Events {
+		if event.Type == "utxo_input" {
+			address := ""
+			if len(event.Meta.Addresses) > 0 {
+				address = event.Meta.Addresses[0]
+			}
+			inputs = append(inputs, models.Input{
+				TxID:    event.TxID,
+				Index:   event.Meta.Index,
+				Address: address,
+				Value:   event.Amount,
+			})
+			totalIputs += event.Amount
+		}
+
+		if event.Type == "utxo_output" {
+			outputs = append(outputs, models.Output{
+				Address: event.Destination,
+				Value:   event.Amount,
+				Index:   event.Meta.Index,
+			})
+			totalOutputs += event.Amount
+		}
+	}
+
+	return models.Transaction{
+		TxID:              v.ID,
+		Confirmations:     v.Confirmations,
+		BlockHash:         v.BlockID,
+		Timestamp:         v.Date,
+		VBytes:            v.Meta.VSize,
+		Inputs:            inputs,
+		Outputs:           outputs,
+		TotalInputsValue:  totalIputs,
+		TotalOutputsValue: totalOutputs,
+		Fee:               totalIputs - totalOutputs,
+	}, nil
+}

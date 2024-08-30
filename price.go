@@ -4,7 +4,7 @@ import "fmt"
 
 func FetchBTCPrice() (float64, error) {
 
-	price, err := config.Crawler.GetBTCPrice()
+	price, err := config.PriceCrawler.GetBTCPrice()
 
 	if err != nil {
 		fmt.Println(err)
