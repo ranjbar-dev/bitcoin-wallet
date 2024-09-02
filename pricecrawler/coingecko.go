@@ -18,6 +18,10 @@ type CoinGeckoPriceResponse struct {
 	} `json:"bitcoin"`
 }
 
+func (c CoinGeckoCrawer) SetBaseURL(url string) {
+	c.BaseURL = url
+}
+
 func (c CoinGeckoCrawer) GetBTCPrice() (float64, error) {
 	client := httpclient.NewHttpclient()
 

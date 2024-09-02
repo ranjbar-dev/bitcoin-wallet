@@ -83,6 +83,10 @@ type TrezorBroadcastTransactionResponse struct {
 	Result string `json:"result"`
 }
 
+func (e TrezorExplorer) SetBaseURL(url string) {
+	e.baseURL = url
+}
+
 func (e TrezorExplorer) GetAddressBalance(address string) (int, error) {
 
 	url := fmt.Sprintf("%s/address/%s", e.baseURL, address)

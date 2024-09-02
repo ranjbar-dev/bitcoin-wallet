@@ -90,6 +90,10 @@ type Events struct {
 	Decimal int `json:"decimal"`
 }
 
+func (e BlockdaemonExplorer) SetBaseURL(url string) {
+	e.baseURL = url
+}
+
 func (e BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
 
 	headers := map[string]string{

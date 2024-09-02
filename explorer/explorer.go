@@ -12,18 +12,18 @@ type Explorer interface {
 	BroadcastTransaction(string) (string, error)
 }
 
-func NewTrezorExplorer(baseUrl string) TrezorExplorer {
+func NewTrezorExplorer() TrezorExplorer {
 
 	return TrezorExplorer{
-		baseURL: baseUrl,
+		baseURL: "https://btc1.trezor.io/api/v2",
 	}
 }
 
-func NewBlockdaemonExplorer(network string, apiKey string, baseUrl string) BlockdaemonExplorer {
+func NewBlockdaemonExplorer(network string, apiKey string) BlockdaemonExplorer {
 
 	return BlockdaemonExplorer{
 		Network: network,
-		baseURL: baseUrl,
+		baseURL: "https://svc.blockdaemon.com/universal/v1/bitcoin",
 		ApiKey:  apiKey,
 	}
 }

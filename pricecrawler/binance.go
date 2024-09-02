@@ -16,6 +16,10 @@ type BinancePriceResponse struct {
 	Price string `json:"price"`
 }
 
+func (c BinanceCrawler) SetBaseURL(url string) {
+	c.BaseURL = url
+}
+
 func (c BinanceCrawler) GetBTCPrice() (float64, error) {
 
 	client := httpclient.NewHttpclient()
