@@ -1,7 +1,7 @@
 package feecrawler
 
 type Crawler interface {
-	GetEstimatedFee() (float64, error)
+	GetEstimatedFee() (float64, float64, float64, error)
 }
 
 func NewBitcoinerCrawler() BitCoinerCrawler {
@@ -13,10 +13,14 @@ func NewBitcoinerCrawler() BitCoinerCrawler {
 
 func NewBlockstreamCrawler() BlockstreamCrawler {
 
-	return BlockstreamCrawler{}
+	return BlockstreamCrawler{
+		BaseURL: "https://blockstream.info/api",
+	}
 }
 
 func NewBlockchainCrawler() BlockchainCrawler {
 
-	return BlockchainCrawler{}
+	return BlockchainCrawler{
+		BaseURL: "https://api.blockchain.info",
+	}
 }
