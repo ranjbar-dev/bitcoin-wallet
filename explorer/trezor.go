@@ -79,6 +79,10 @@ type TrezorUTXOsResponse struct {
 	Height        int    `json:"height"`
 }
 
+type TrezorBroadcastTransactionResponse struct {
+	Result string `json:"result"`
+}
+
 func (e TrezorExplorer) GetAddressBalance(address string) (int, error) {
 
 	url := fmt.Sprintf("%s/address/%s", e.baseURL, address)
@@ -231,7 +235,6 @@ func (e TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 		TxCount:           v.TxCount,
 		Txs:               txs,
 	}, nil
-
 }
 
 func (e TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.UTXO, error) {
@@ -340,4 +343,29 @@ func (e TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, e
 		Inputs:        inputs,
 		Outputs:       outputs,
 	}, nil
+}
+
+func (e TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
+
+	url := fmt.Sprintf("%s/tx/%s", e.baseURL, hex)
+
+	client := httpclient.NewHttpclient()
+
+	res, err := client.NewRequest().Get(url)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return "", err
+	}
+
+	var v TrezorBroadcastTransactionResponse
+
+	err = json.Unmarshal(res.Body(), &v)
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return v.Result, nil
 }

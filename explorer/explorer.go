@@ -8,21 +8,22 @@ type Explorer interface {
 	GetCurrentBlockHash() (string, error)
 	GetBlockByNumber(int) (models.Block, error)
 	GetAddressUTXOs(string, int) ([]models.UTXO, error)
-	GetTransactionByTxID(txID string) (models.Transaction, error)
+	GetTransactionByTxID(string) (models.Transaction, error)
+	BroadcastTransaction(string) (string, error)
 }
 
-func NewTrezorExplorer() TrezorExplorer {
+func NewTrezorExplorer(baseUrl string) TrezorExplorer {
 
 	return TrezorExplorer{
-		baseURL: "https://btc1.trezor.io/api/v2",
+		baseURL: baseUrl,
 	}
 }
 
-func NewBlockdaemonExplorer(network string, apiKey string) BlockdaemonExplorer {
+func NewBlockdaemonExplorer(network string, apiKey string, baseUrl string) BlockdaemonExplorer {
 
 	return BlockdaemonExplorer{
 		Network: network,
-		baseURL: "https://svc.blockdaemon.com/universal/v1/bitcoin",
+		baseURL: baseUrl,
 		ApiKey:  apiKey,
 	}
 }

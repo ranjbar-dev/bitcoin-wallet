@@ -399,3 +399,8 @@ func (e BlockdaemonExplorer) GetTransactionByTxID(txID string) (models.Transacti
 		Fee:               totalIputs - totalOutputs,
 	}, nil
 }
+
+func (e BlockdaemonExplorer) BroadcastTransaction(hex string) (string, error) {
+
+	return "", nil
+}
