@@ -1,41 +1,43 @@
 package bitcoinwallet
 
-type BlockchainBlock struct {
-	// TODO : implement
-}
+import (
+	"fmt"
+
+	"github.com/ranjbar-dev/bitcoin-wallet/models"
+)
 
 func FetchCurrentBlockNumber() (int, error) {
 
-	// use config to get explorer type and apikey
+	num, err := config.Explorer.GetCurrentBlockNumber()
 
-	// trezor blockbook api: https://github.com/trezor/blockbook/blob/master/docs/api.md
-	// https://btc1.trezor.io
+	if err != nil {
+		fmt.Println(err)
+		return -1, err
+	}
 
-	// TODO : implement
-
-	return 0, nil
+	return num, nil
 }
 
-func FetchCurrentBlockHash() (int, error) {
+func FetchCurrentBlockHash() (string, error) {
 
-	// use config to get explorer type and apikey
+	hash, err := config.Explorer.GetCurrentBlockHash()
 
-	// trezor blockbook api: https://github.com/trezor/blockbook/blob/master/docs/api.md
-	// https://btc1.trezor.io
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
 
-	// TODO : implement
-
-	return 0, nil
+	return hash, nil
 }
 
-func FetchBlockByNumber() (BlockchainBlock, error) {
+func FetchBlockByNumber(num int) (models.Block, error) {
 
-	// use config to get explorer type and apikey
+	block, err := config.Explorer.GetBlockByNumber(num)
 
-	// trezor blockbook api: https://github.com/trezor/blockbook/blob/master/docs/api.md
-	// https://btc1.trezor.io
+	if err != nil {
+		fmt.Println(err)
+		return models.Block{}, err
+	}
 
-	// TODO : implement
-
-	return BlockchainBlock{}, nil
+	return block, nil
 }

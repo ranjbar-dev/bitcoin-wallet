@@ -1,13 +1,14 @@
-package bitcoinwallet
+package models
 
 import "crypto/ecdsa"
 
 // TODO : change types these are just hints
 type TransactionInput struct {
-	PrivateKey any // owner of utxo privatekey
-	Value      any // utxo value in satoshi
-	Index      any // utxo index
-	TxId       any // utxo txid
+	Address    string
+	PrivateKey *ecdsa.PrivateKey // owner of utxo privatekey
+	Value      int               // utxo value in satoshi
+	Index      int               // utxo index
+	TxId       string            // utxo txid
 }
 
 func NewTransactionInput(privateKey *ecdsa.PrivateKey, value int, index int, txId string) *TransactionInput {

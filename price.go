@@ -1,10 +1,15 @@
 package bitcoinwallet
 
+import "fmt"
+
 func FetchBTCPrice() (float64, error) {
 
-	// support coingecko.com and binance.com api
+	price, err := config.PriceCrawler.GetBTCPrice()
 
-	// TODO : implement
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
 
-	return 0, nil
+	return price, nil
 }
