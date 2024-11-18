@@ -21,7 +21,7 @@ type Transaction struct {
 	outputs []models.TransactionOutput
 }
 
-// returns pointer of tranaction
+// NewTransaction creates a new transaction with the given inputs and outputs.
 func NewTransaction(inputs []models.TransactionInput, outputs []models.TransactionOutput) *Transaction {
 
 	return &Transaction{
@@ -29,17 +29,20 @@ func NewTransaction(inputs []models.TransactionInput, outputs []models.Transacti
 		outputs: outputs,
 	}
 }
+
+// SetSweep sets the sweep flag of the transaction.
 func (t *Transaction) Inputs() []models.TransactionInput {
 
 	return t.inputs
 }
 
+// Outputs returns the outputs of the transaction.
 func (t *Transaction) Outputs() []models.TransactionOutput {
 
 	return t.outputs
 }
 
-// in bytes
+// Size returns the size of the transaction in bytes.
 func (t *Transaction) Size() int {
 
 	transactionSize := 10
@@ -48,16 +51,18 @@ func (t *Transaction) Size() int {
 
 	for i := 0; i < len(t.inputs); i++ {
 		transactionSize += eachInputSizeInByte
+
 	}
 
 	for i := 0; i < len(t.outputs); i++ {
+
 		transactionSize += eachOutputSizeInByte
 	}
 
 	return transactionSize
 }
 
-// in satoshi
+// Fee returns the fee of the transaction in satoshi.
 func (t *Transaction) Fee() int {
 
 	inputsVal := 0
@@ -74,7 +79,7 @@ func (t *Transaction) Fee() int {
 	return inputsVal - outputsVal
 }
 
-// sign transaction inputs and return transaction hex
+// SignAndSerialize signs the transaction inputs and returns the transaction hex.
 func (t *Transaction) SignAndSerialize() error {
 
 	inputsVal := 0
@@ -153,7 +158,7 @@ func (t *Transaction) SignAndSerialize() error {
 	return nil
 }
 
-// broadcast transaction hex in blockchain and returns txID
+// Broadcast broadcasts the transaction hex to the blockchain and returns the transaction ID.
 func (t *Transaction) Broadcast() (string, error) {
 
 	res, err := config.Explorer.BroadcastTransaction(t.hex)
@@ -166,6 +171,7 @@ func (t *Transaction) Broadcast() (string, error) {
 	return res, nil
 }
 
+// FetchTransactionByTxID fetches a transaction by its transaction ID.
 func FetchTransactionByTxID(txID string) (models.Transaction, error) {
 
 	tx, err := config.Explorer.GetTransactionByTxID(txID)
