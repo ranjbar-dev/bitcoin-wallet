@@ -4,6 +4,8 @@ Bitcoin wallt version 2 for golang programming language
 
 check out avaiable methods in pacakge 
 
+install using `go get -u github.com/ranjbar-dev/bitcoin-wallet@2.0.0`
+
 ## Configuration 
 
 #### Set config 

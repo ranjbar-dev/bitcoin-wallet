@@ -1,6 +1,6 @@
 echo "Enter commit message: "
 set /p COMMENT=
-echo "Enter version: "
+echo "Enter version: (2.0.0)"
 set /p VERSION=
 
 git add . 
