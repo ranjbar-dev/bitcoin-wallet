@@ -10,7 +10,7 @@ import (
 )
 
 type TrezorExplorer struct {
-	baseURL string
+	BaseURL string
 }
 
 type TrezorBalanceResponse struct {
@@ -84,12 +84,12 @@ type TrezorBroadcastTransactionResponse struct {
 }
 
 func (e TrezorExplorer) SetBaseURL(url string) {
-	e.baseURL = url
+	e.BaseURL = url
 }
 
 func (e TrezorExplorer) GetAddressBalance(address string) (int, error) {
 
-	url := fmt.Sprintf("%s/address/%s", e.baseURL, address)
+	url := fmt.Sprintf("%s/address/%s", e.BaseURL, address)
 
 	client := httpclient.NewHttpclient()
 
@@ -121,7 +121,7 @@ func (e TrezorExplorer) GetCurrentBlockNumber() (int, error) {
 
 	client := httpclient.NewHttpclient()
 
-	res, err := client.NewRequest().Get(e.baseURL)
+	res, err := client.NewRequest().Get(e.BaseURL)
 
 	if err != nil {
 		fmt.Println("Error", err)
@@ -141,7 +141,7 @@ func (e TrezorExplorer) GetCurrentBlockNumber() (int, error) {
 
 func (e TrezorExplorer) GetCurrentBlockHash() (string, error) {
 
-	url := fmt.Sprintf("%s/block-index/", e.baseURL)
+	url := fmt.Sprintf("%s/block-index/", e.BaseURL)
 
 	client := httpclient.NewHttpclient()
 
@@ -165,7 +165,7 @@ func (e TrezorExplorer) GetCurrentBlockHash() (string, error) {
 
 func (e TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 
-	url := fmt.Sprintf("%s/block/%d", e.baseURL, num)
+	url := fmt.Sprintf("%s/block/%d", e.BaseURL, num)
 
 	client := httpclient.NewHttpclient()
 
@@ -247,7 +247,7 @@ func (e TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.U
 		timeOut = 30
 	}
 
-	url := fmt.Sprintf("%s/utxo/%s?confirmed=true", e.baseURL, address)
+	url := fmt.Sprintf("%s/utxo/%s?confirmed=true", e.BaseURL, address)
 
 	client := httpclient.NewHttpclient()
 
@@ -289,7 +289,7 @@ func (e TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.U
 
 func (e TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, error) {
 
-	url := fmt.Sprintf("%s/tx/%s", e.baseURL, txID)
+	url := fmt.Sprintf("%s/tx/%s", e.BaseURL, txID)
 
 	client := httpclient.NewHttpclient()
 
@@ -351,7 +351,7 @@ func (e TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, e
 
 func (e TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 
-	url := fmt.Sprintf("%s/tx/%s", e.baseURL, hex)
+	url := fmt.Sprintf("%s/tx/%s", e.BaseURL, hex)
 
 	client := httpclient.NewHttpclient()
 

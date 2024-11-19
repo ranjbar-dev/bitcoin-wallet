@@ -43,7 +43,5 @@ func (c BlockstreamCrawler) GetEstimatedFee() (float64, float64, float64, error)
 		return 0, 0, 0, err
 	}
 
-	fmt.Println(v)
-
 	return v.Low, v.Medium, v.High, nil
 }

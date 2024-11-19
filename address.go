@@ -6,6 +6,7 @@ import (
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
+	"github.com/ranjbar-dev/bitcoin-wallet/models"
 )
 
 // PrivateKeyToAddress generates a P2PKH address from a given ECDSA private key.
@@ -58,4 +59,25 @@ func FetchAddressBalance(address string) (int, error) {
 	}
 
 	return b, nil
+}
+
+// FetchAddressUTXOs retrieves the unspent transaction outputs (UTXOs) for a given Bitcoin address.
+// It uses the configured blockchain explorer to fetch the UTXOs within a specified timeout period.
+//
+// Parameters:
+//   - address: A string representing the Bitcoin address for which to fetch UTXOs.
+//
+// Returns:
+//   - []models.UTXO: A slice of UTXO objects associated with the given address.
+//   - error: An error object if there was an issue fetching the UTXOs, otherwise nil.
+func FetchAddressUTXOs(address string) ([]models.UTXO, error) {
+
+	v, err := config.Explorer.GetAddressUTXOs(address, config.Timeout)
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	return v, nil
 }

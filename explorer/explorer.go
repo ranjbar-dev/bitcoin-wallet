@@ -15,7 +15,7 @@ type Explorer interface {
 func NewTrezorExplorer() TrezorExplorer {
 
 	return TrezorExplorer{
-		baseURL: "https://btc1.trezor.io/api/v2",
+		BaseURL: "https://btc1.trezor.io/api/v2",
 	}
 }
 
