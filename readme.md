@@ -125,7 +125,6 @@ price, err := bitcoinwallet.FetchPrice()
 
 ```
 
-## Transaction 
-## Block 
-
-// TODO : complete doc 
+// TODO : complete Transaction and Block doc 
+// TODO : add tests 
+// TODO : replace int and int64 with big.Int for balance and satoshi transfer usages 
