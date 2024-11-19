@@ -1,2 +1,0 @@
-PrivateKey:       88414dbb373a211bc157265a267f3de6a4cec210f3a5da12e89630f2c447ad27
-Address:          tb1qppv790u4dz48ctnk3p7ss7fmspckagp3wrfyp0
