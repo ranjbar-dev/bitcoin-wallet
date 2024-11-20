@@ -104,7 +104,6 @@ fmt.Println("UTXO records:", utxos)
 
 ```
 
-
 ## Utils 
 
 #### Estimate fee 
@@ -127,6 +126,97 @@ price, err := bitcoinwallet.FetchPrice()
 
 ```
 
-// TODO : complete Transaction and Block doc 
+
+## Block 
+
+In the Bitcoin blockchain, a block is a collection of transactions that have been confirmed and recorded on the blockchain.
+
+
+### Current block number 
+
+fetch current block number using explorer configured in package 
+
+```
+
+blockNumber, _ := bitcoinwallet.FetchCurrentBlockNumber()
+fmt.Println("blockNumber:", blockNumber)
+
+```
+
+### Current block hash 
+
+fetch current block hash using explorer configured in package 
+
+```
+
+blockHash, _ := bitcoinwallet.FetchCurrentBlockHash()
+fmt.Println("blockHash:", blockHash)
+
+```
+
+### Get block by number 
+
+fetch block data by block number using explorer configured in package 
+
+```
+
+blockData, _ := bitcoinwallet.FetchBlockByNumber(blockNumber)
+fmt.Println("blockData:", blockData)
+
+```
+
+
+## Transaction 
+
+### create / sign / broadcast transaction 
+
+```
+
+var inputs models.TransactionInput
+
+// add transaction inputs
+inputs[0] = models.NewTransactionInput(privateKey, utxoValue, utxoIndex, utxoTxId)
+
+var outputs models.TransactionOutput
+
+// add transaction outputs
+outputs[0] = models.NewTransactionOutput(toAddressBytes, valueInSatoshi)
+
+// create a new transaction
+transaction := bitcoinwallet.NewTransaction(inputs, outputs)
+
+// get transaction size in bytes
+size := transaction.Size()
+fmt.Println("size of transaction in bytes: ", size)
+
+// get transaction inputs
+fmt.Println("transaction inputs: ", transaction.Inputs())
+
+// get transaction outputs
+fmt.Println("transaction outputs: ", transaction.Outputs())
+
+// calculate transaction fee based on inputs and outputs
+fmt.Println("transaction fee: ", transaction.Fee())
+
+// sign transaction
+err := transaction.SignAndSerialize()
+if err != nil {
+
+    fmt.Println("error on sign and serialize transaction: ", err)
+    return
+}
+
+// broadcast transaction into blockchain
+txID, err := transaction.Broadcast()
+if err != nil {
+
+    fmt.Println("error on broadcast transaction: ", err)
+    return
+}
+
+fmt.Println("transaction broadcasted successfully with txID: ", txID)
+
+```
+
 // TODO : add tests 
 // TODO : replace int and int64 with big.Int for balance and satoshi transfer usages 

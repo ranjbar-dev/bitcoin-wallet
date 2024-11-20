@@ -16,7 +16,6 @@ import (
 
 type Transaction struct {
 	hex     string
-	sweep   bool
 	inputs  []models.TransactionInput
 	outputs []models.TransactionOutput
 }
@@ -30,13 +29,13 @@ func NewTransaction(inputs []models.TransactionInput, outputs []models.Transacti
 	}
 }
 
-// SetSweep sets the sweep flag of the transaction.
+// Inputs returns copy of transaction inputs
 func (t *Transaction) Inputs() []models.TransactionInput {
 
 	return t.inputs
 }
 
-// Outputs returns the outputs of the transaction.
+// Outputs returns copy of transaction outputs
 func (t *Transaction) Outputs() []models.TransactionOutput {
 
 	return t.outputs
@@ -92,8 +91,6 @@ func (t *Transaction) SignAndSerialize() error {
 	for _, output := range t.outputs {
 		outputsVal += int(output.Value)
 	}
-
-	// fee := inputsVal - outputsVal
 
 	tx := wire.NewMsgTx(2)
 
