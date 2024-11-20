@@ -218,5 +218,8 @@ fmt.Println("transaction broadcasted successfully with txID: ", txID)
 
 ```
 
-// TODO : add tests 
-// TODO : replace int and int64 with big.Int for balance and satoshi transfer usages 
+## TODOS 
+
+- add tests 
+
+- replace int and int64 with big.Int for balance and satoshi transfer usages 
