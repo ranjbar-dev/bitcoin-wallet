@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"errors"
-	"fmt"
 
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -107,8 +106,8 @@ func (t *Transaction) SignAndSerialize() error {
 	}
 
 	for _, output := range t.outputs {
+
 		tx.AddTxOut(wire.NewTxOut(output.Value, output.Address))
-		fmt.Println(output)
 	}
 
 	tx.LockTime = 0
@@ -161,7 +160,7 @@ func (t *Transaction) Broadcast() (string, error) {
 	res, err := config.Explorer.BroadcastTransaction(t.hex)
 
 	if err != nil {
-		fmt.Println(err)
+
 		return "", err
 	}
 
@@ -174,7 +173,7 @@ func FetchTransactionByTxID(txID string) (models.Transaction, error) {
 	tx, err := config.Explorer.GetTransactionByTxID(txID)
 
 	if err != nil {
-		fmt.Println(err)
+
 		return models.Transaction{}, err
 	}
 	return tx, nil

@@ -90,11 +90,11 @@ type Events struct {
 	Decimal int `json:"decimal"`
 }
 
-func (e BlockdaemonExplorer) SetBaseURL(url string) {
+func (e *BlockdaemonExplorer) SetBaseURL(url string) {
 	e.baseURL = url
 }
 
-func (e BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
+func (e *BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
 
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
@@ -130,7 +130,7 @@ func (e BlockdaemonExplorer) GetAddressBalance(address string) (int, error) {
 	return int(balance), nil
 }
 
-func (e BlockdaemonExplorer) GetCurrentBlockNumber() (int, error) {
+func (e *BlockdaemonExplorer) GetCurrentBlockNumber() (int, error) {
 
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
@@ -157,7 +157,7 @@ func (e BlockdaemonExplorer) GetCurrentBlockNumber() (int, error) {
 	return int(val), nil
 }
 
-func (e BlockdaemonExplorer) GetCurrentBlockHash() (string, error) {
+func (e *BlockdaemonExplorer) GetCurrentBlockHash() (string, error) {
 
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
@@ -180,7 +180,7 @@ func (e BlockdaemonExplorer) GetCurrentBlockHash() (string, error) {
 	return res.String(), nil
 }
 
-func (e BlockdaemonExplorer) GetBlockByNumber(num int) (models.Block, error) {
+func (e *BlockdaemonExplorer) GetBlockByNumber(num int) (models.Block, error) {
 
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
@@ -268,7 +268,7 @@ func (e BlockdaemonExplorer) GetBlockByNumber(num int) (models.Block, error) {
 }
 
 // timeout in seconds between requests. set to zero for default timeout of 30 seconds
-func (e BlockdaemonExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.UTXO, error) {
+func (e *BlockdaemonExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.UTXO, error) {
 
 	var all BlockdaemonUTXOsResponse
 
@@ -333,7 +333,7 @@ func (e BlockdaemonExplorer) GetAddressUTXOs(address string, timeOut int) ([]mod
 	return utxos, nil
 }
 
-func (e BlockdaemonExplorer) GetTransactionByTxID(txID string) (models.Transaction, error) {
+func (e *BlockdaemonExplorer) GetTransactionByTxID(txID string) (models.Transaction, error) {
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
 		"Accept":    "application/json",
@@ -404,7 +404,7 @@ func (e BlockdaemonExplorer) GetTransactionByTxID(txID string) (models.Transacti
 	}, nil
 }
 
-func (e BlockdaemonExplorer) BroadcastTransaction(hex string) (string, error) {
+func (e *BlockdaemonExplorer) BroadcastTransaction(hex string) (string, error) {
 
 	return "", nil
 }

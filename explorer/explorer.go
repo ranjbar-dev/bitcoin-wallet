@@ -3,6 +3,7 @@ package explorer
 import "github.com/ranjbar-dev/bitcoin-wallet/models"
 
 type Explorer interface {
+	SetBaseURL(url string)
 	GetAddressBalance(string) (int, error)
 	GetCurrentBlockNumber() (int, error)
 	GetCurrentBlockHash() (string, error)
@@ -12,16 +13,16 @@ type Explorer interface {
 	BroadcastTransaction(string) (string, error)
 }
 
-func NewTrezorExplorer() TrezorExplorer {
+func NewTrezorExplorer() Explorer {
 
-	return TrezorExplorer{
+	return &TrezorExplorer{
 		BaseURL: "https://btc1.trezor.io/api/v2",
 	}
 }
 
-func NewBlockdaemonExplorer(network string, apiKey string) BlockdaemonExplorer {
+func NewBlockdaemonExplorer(network string, apiKey string) Explorer {
 
-	return BlockdaemonExplorer{
+	return &BlockdaemonExplorer{
 		Network: network,
 		baseURL: "https://svc.blockdaemon.com/universal/v1/bitcoin",
 		ApiKey:  apiKey,
