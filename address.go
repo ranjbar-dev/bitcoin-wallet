@@ -9,7 +9,7 @@ import (
 	"github.com/ranjbar-dev/bitcoin-wallet/models"
 )
 
-// PrivateKeyToAddress generates a P2PKH address from a given ECDSA private key.
+// PrivateKeyToAddress generates a P2WPKH address from a given ECDSA private key.
 // It returns the generated address as a string and an error if any occurs during the process.
 // The function first converts the private key to bytes, then derives the public key from it,
 // and finally generates the address using the public key hash.
@@ -18,7 +18,7 @@ import (
 // - privateKey: A pointer to an ECDSA private key.
 //
 // Returns:
-// - A string representing the generated P2PKH address.
+// - A string representing the generated P2WPKH address.
 // - An error if any occurs during the address generation process.
 func PrivateKeyToAddress(privateKey *ecdsa.PrivateKey) (string, error) {
 
@@ -30,7 +30,7 @@ func PrivateKeyToAddress(privateKey *ecdsa.PrivateKey) (string, error) {
 
 	_, pubKey := btcec.PrivKeyFromBytes(pvBytes)
 
-	addr, err := btcutil.NewAddressPubKeyHash(btcutil.Hash160(pubKey.SerializeCompressed()), config.Chaincfg)
+	addr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(pubKey.SerializeCompressed()), config.Chaincfg)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
