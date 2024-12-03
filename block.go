@@ -48,7 +48,6 @@ func FetchCurrentBlockHash() (string, error) {
 func FetchBlockByNumber(num int) (models.Block, error) {
 
 	block, err := config.Explorer.GetBlockByNumber(num)
-
 	if err != nil {
 
 		return models.Block{}, err

@@ -169,7 +169,6 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
 
 		return models.Block{}, err
@@ -194,8 +193,14 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 				return models.Block{}, err
 			}
 
+			address := ""
+			if len(vin.Addresses) > 0 {
+
+				address = vin.Addresses[0]
+			}
+
 			inputs = append(inputs, models.Input{
-				Address: vin.Addresses[0],
+				Address: address,
 				Value:   int(val),
 				Index:   vin.N,
 				TxID:    tx.TxID,
@@ -211,8 +216,14 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 				return models.Block{}, err
 			}
 
+			address := ""
+			if len(vout.Addresses) > 0 {
+
+				address = vout.Addresses[0]
+			}
+
 			outputs = append(outputs, models.Output{
-				Address: vout.Addresses[0],
+				Address: address,
 				Value:   int(val),
 				Index:   vout.N,
 			})
