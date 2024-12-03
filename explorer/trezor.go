@@ -95,26 +95,24 @@ func (e *TrezorExplorer) GetAddressBalance(address string) (int, error) {
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return -1, err
 	}
 
 	var v TrezorBalanceResponse
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
+		return -1, err
 	}
 
 	balance, err := strconv.ParseInt(v.Balance, 10, 64)
-
 	if err != nil {
-		fmt.Println(err)
+
 		return -1, err
 	}
+
 	return int(balance), nil
 }
 
@@ -125,7 +123,7 @@ func (e *TrezorExplorer) GetCurrentBlockNumber() (int, error) {
 	res, err := client.NewRequest().Get(e.BaseURL)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return -1, err
 	}
 
@@ -134,7 +132,8 @@ func (e *TrezorExplorer) GetCurrentBlockNumber() (int, error) {
 	err = json.Unmarshal(res.Body(), &v)
 
 	if err != nil {
-		fmt.Println(err)
+
+		return -1, err
 	}
 
 	return v.BlockBook.BestHeight, nil
@@ -149,16 +148,15 @@ func (e *TrezorExplorer) GetCurrentBlockHash() (string, error) {
 	res, err := client.NewRequest().Get(url)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return "", err
 	}
 
 	var v TrezorBlockHashResponse
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
+		return "", err
 	}
 
 	return v.BlockHash, nil
@@ -173,30 +171,29 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 	res, err := client.NewRequest().Get(url)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return models.Block{}, err
 	}
 
 	var v TrezorBlockResponse
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
+		return models.Block{}, err
 	}
 
-	fmt.Println(v.Txs[2])
-
 	var txs []models.Transaction
-
 	for _, tx := range v.Txs {
+
 		var inputs []models.Input
 		for _, vin := range tx.Vin {
+
 			val, err := strconv.ParseInt(vin.Value, 10, 64)
 			if err != nil {
-				fmt.Println(err)
+
 				return models.Block{}, err
 			}
+
 			inputs = append(inputs, models.Input{
 				Address: vin.Addresses[0],
 				Value:   int(val),
@@ -206,12 +203,11 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 		}
 
 		var outputs []models.Output
-
 		for _, vout := range tx.Vout {
-			val, err := strconv.ParseInt(vout.Value, 10, 64)
 
+			val, err := strconv.ParseInt(vout.Value, 10, 64)
 			if err != nil {
-				fmt.Println(err)
+
 				return models.Block{}, err
 			}
 
@@ -255,28 +251,27 @@ func (e *TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.
 	res, err := client.NewRequest().Get(url)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return nil, err
 	}
 
 	var v []TrezorUTXOsResponse
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
 		return nil, err
 	}
 
 	utxos := []models.UTXO{}
-
 	for _, v := range v {
+
 		val, err := strconv.ParseInt(v.Value, 10, 64)
 
 		if err != nil {
-			fmt.Println(err)
+
 			return nil, err
 		}
+
 		utxos = append(utxos, models.UTXO{
 			Amount:        val,
 			TxID:          v.TxID,
@@ -297,16 +292,15 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 	res, err := client.NewRequest().Get(url)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return models.Transaction{}, err
 	}
 
 	var v BlockTxs
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
+		return models.Transaction{}, err
 	}
 
 	var inputs []models.Input
@@ -325,12 +319,11 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 	}
 
 	var outputs []models.Output
-
 	for _, vout := range v.Vout {
-		val, err := strconv.ParseInt(vout.Value, 10, 64)
 
+		val, err := strconv.ParseInt(vout.Value, 10, 64)
 		if err != nil {
-			fmt.Println(err)
+
 			return models.Transaction{}, err
 		}
 
@@ -359,16 +352,14 @@ func (e *TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 	res, err := client.NewRequest().Get(url)
 
 	if err != nil {
-		fmt.Println("Error", err)
+
 		return "", err
 	}
 
 	var v TrezorBroadcastTransactionResponse
-
 	err = json.Unmarshal(res.Body(), &v)
-
 	if err != nil {
-		fmt.Println(err)
+
 		return "", err
 	}
 
