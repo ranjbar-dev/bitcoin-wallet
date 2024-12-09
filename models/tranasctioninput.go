@@ -6,12 +6,12 @@ import "crypto/ecdsa"
 type TransactionInput struct {
 	Address    string
 	PrivateKey *ecdsa.PrivateKey // owner of utxo privatekey
-	Value      int               // utxo value in satoshi
+	Value      int64             // utxo value in satoshi
 	Index      int               // utxo index
 	TxId       string            // utxo txid
 }
 
-func NewTransactionInput(privateKey *ecdsa.PrivateKey, value int, index int, txId string) *TransactionInput {
+func NewTransactionInput(privateKey *ecdsa.PrivateKey, value int64, index int, txId string) *TransactionInput {
 
 	return &TransactionInput{
 		PrivateKey: privateKey,

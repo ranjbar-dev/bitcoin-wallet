@@ -61,17 +61,17 @@ func (t *Transaction) Size() int {
 }
 
 // Fee returns the fee of the transaction in satoshi.
-func (t *Transaction) Fee() int {
+func (t *Transaction) Fee() int64 {
 
-	inputsVal := 0
-	outputsVal := 0
+	var inputsVal int64
+	var outputsVal int64
 
 	for _, input := range t.inputs {
 		inputsVal += input.Value
 	}
 
 	for _, output := range t.outputs {
-		outputsVal += int(output.Value)
+		outputsVal += output.Value
 	}
 
 	return inputsVal - outputsVal
@@ -80,15 +80,17 @@ func (t *Transaction) Fee() int {
 // SignAndSerialize signs the transaction inputs and returns the transaction hex.
 func (t *Transaction) SignAndSerialize() error {
 
-	inputsVal := 0
-	outputsVal := 0
+	var inputsVal int64
+	var outputsVal int64
 
 	for _, input := range t.inputs {
+
 		inputsVal += input.Value
 	}
 
 	for _, output := range t.outputs {
-		outputsVal += int(output.Value)
+
+		outputsVal += output.Value
 	}
 
 	tx := wire.NewMsgTx(2)
@@ -97,6 +99,7 @@ func (t *Transaction) SignAndSerialize() error {
 
 		hash, err := chainhash.NewHashFromStr(utxo.TxId)
 		if err != nil {
+
 			return err
 		}
 
