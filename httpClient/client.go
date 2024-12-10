@@ -19,6 +19,6 @@ func (h *Httpclient) NewRequest() *resty.Request {
 func NewHttpclient() *Httpclient {
 
 	return &Httpclient{
-		c: resty.New().SetTimeout(time.Second * 10).SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}),
+		c: resty.New().SetRetryCount(3).SetRetryWaitTime(time.Millisecond * 500).SetTimeout(time.Second * 10).SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}),
 	}
 }
