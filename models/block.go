@@ -23,6 +23,7 @@ type Transaction struct {
 	Size              int
 	VBytes            int
 	Fee               int
+	BlockNumber       int
 	BlockHash         string
 	Timestamp         int
 }

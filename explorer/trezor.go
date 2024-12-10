@@ -232,6 +232,7 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 		txs = append(txs, models.Transaction{
 			TxID:          tx.TxID,
 			BlockHash:     tx.BlockHash,
+			BlockNumber:   tx.BlockHeight,
 			Confirmations: tx.Confirmations,
 			Inputs:        inputs,
 			Outputs:       outputs,
@@ -348,6 +349,7 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 	return models.Transaction{
 		TxID:          v.TxID,
 		BlockHash:     v.BlockHash,
+		BlockNumber:   v.BlockHeight,
 		Confirmations: v.Confirmations,
 		Inputs:        inputs,
 		Outputs:       outputs,
