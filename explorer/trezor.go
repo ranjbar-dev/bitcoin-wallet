@@ -317,13 +317,21 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 
 	var inputs []models.Input
 	for _, vin := range v.Vin {
+
 		val, err := strconv.ParseInt(vin.Value, 10, 64)
 		if err != nil {
-			fmt.Println(err)
+
 			return models.Transaction{}, err
 		}
+
+		var address string
+		if len(vin.Addresses) > 0 {
+
+			address = vin.Addresses[0]
+		}
+
 		inputs = append(inputs, models.Input{
-			Address: vin.Addresses[0],
+			Address: address,
 			Value:   int(val),
 			Index:   vin.N,
 			TxID:    v.TxID,
@@ -339,8 +347,14 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 			return models.Transaction{}, err
 		}
 
+		var address string
+		if len(vout.Addresses) > 0 {
+
+			address = vout.Addresses[0]
+		}
+
 		outputs = append(outputs, models.Output{
-			Address: vout.Addresses[0],
+			Address: address,
 			Value:   int(val),
 			Index:   vout.N,
 		})
