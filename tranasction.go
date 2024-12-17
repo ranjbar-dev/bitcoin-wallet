@@ -116,7 +116,18 @@ func (t *Transaction) SignAndSerialize() error {
 
 	for _, output := range t.outputs {
 
-		tx.AddTxOut(wire.NewTxOut(output.Value, output.Address))
+		toAddr, err := btcutil.DecodeAddress(output.Address, config.Chaincfg)
+		if err != nil {
+			return errors.New("DecodeAddress destAddrStr err " + err.Error())
+		}
+
+		toAddrByte, err := txscript.PayToAddrScript(toAddr)
+		if err != nil {
+
+			return errors.New("toAddr PayToAddrScript err " + err.Error())
+		}
+
+		tx.AddTxOut(wire.NewTxOut(output.Value, toAddrByte))
 	}
 
 	tx.LockTime = 0
@@ -124,6 +135,7 @@ func (t *Transaction) SignAndSerialize() error {
 	signerMap := make(map[wire.OutPoint]*wire.TxOut)
 
 	for _, in := range tx.TxIn {
+
 		signerMap[in.PreviousOutPoint] = &wire.TxOut{}
 	}
 	sigHashes := txscript.NewTxSigHashes(tx, txscript.NewMultiPrevOutFetcher(signerMap))
@@ -133,18 +145,21 @@ func (t *Transaction) SignAndSerialize() error {
 
 		fromAddr, err := btcutil.DecodeAddress(utxo.Address, config.Chaincfg)
 		if err != nil {
+
 			return errors.New("DecodeAddress fromAddr err " + err.Error())
 		}
 
-		fromAddrByte, err := txscript.PayToAddrScript(fromAddr)
+		fromAddrScriptByte, err := txscript.PayToAddrScript(fromAddr)
 		if err != nil {
-			return errors.New("fromAddrByte PayToAddrScript err " + err.Error())
+
+			return errors.New("fromAddrScriptByte PayToAddrScript err " + err.Error())
 		}
 
 		secpPrivKey := secp256k1.PrivKeyFromBytes(utxo.PrivateKey.D.Bytes())
 
-		signature, err := txscript.WitnessSignature(tx, sigHashes, index, int64(utxo.Value), fromAddrByte, txscript.SigHashAll, secpPrivKey, true)
+		signature, err := txscript.WitnessSignature(tx, sigHashes, index, int64(utxo.Value), fromAddrScriptByte, txscript.SigHashAll, secpPrivKey, true)
 		if err != nil {
+
 			return errors.New("WitnessSignature err " + err.Error())
 		}
 
