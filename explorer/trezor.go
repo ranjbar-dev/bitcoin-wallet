@@ -123,7 +123,6 @@ func (e *TrezorExplorer) GetCurrentBlockNumber() (int, error) {
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(e.BaseURL)
-
 	if err != nil {
 
 		return -1, err
