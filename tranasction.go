@@ -40,6 +40,12 @@ func (t *Transaction) Outputs() []models.TransactionOutput {
 	return t.outputs
 }
 
+// Hex
+func (t *Transaction) Hex() string {
+
+	return t.hex
+}
+
 // Size returns the size of the transaction in bytes.
 func (t *Transaction) Size() int {
 
