@@ -2,8 +2,10 @@ package explorer
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	httpclient "github.com/ranjbar-dev/bitcoin-wallet/httpClient"
 	"github.com/ranjbar-dev/bitcoin-wallet/models"
@@ -146,7 +148,6 @@ func (e *TrezorExplorer) GetCurrentBlockHash() (string, error) {
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
 
 		return "", err
@@ -172,6 +173,10 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 	if err != nil {
 
 		return models.Block{}, err
+	}
+	if strings.Contains(string(res.Body()), "error") {
+
+		return models.Block{}, errors.New(string(res.Body()))
 	}
 
 	var v TrezorBlockResponse
@@ -261,10 +266,13 @@ func (e *TrezorExplorer) GetAddressUTXOs(address string, timeOut int) ([]models.
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
 
 		return nil, err
+	}
+	if strings.Contains(string(res.Body()), "error") {
+
+		return nil, errors.New(string(res.Body()))
 	}
 
 	var v []TrezorUTXOsResponse
@@ -302,10 +310,13 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
 
 		return models.Transaction{}, err
+	}
+	if strings.Contains(string(res.Body()), "error") {
+
+		return models.Transaction{}, errors.New(string(res.Body()))
 	}
 
 	var v BlockTxs
@@ -372,15 +383,19 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 
 func (e *TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 
-	url := fmt.Sprintf("%s/tx/%s", e.BaseURL, hex)
+	url := fmt.Sprintf("%s/sendtx/%s", e.BaseURL, hex)
 
 	client := httpclient.NewHttpclient()
 
 	res, err := client.NewRequest().Get(url)
-
 	if err != nil {
 
 		return "", err
+	}
+
+	if strings.Contains(string(res.Body()), "error") {
+
+		return "", errors.New(string(res.Body()))
 	}
 
 	var v TrezorBroadcastTransactionResponse
