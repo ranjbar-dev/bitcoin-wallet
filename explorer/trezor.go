@@ -417,7 +417,7 @@ func (e *TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 	err = json.Unmarshal(res.Body(), &v)
 	if err != nil {
 
-		return "", err
+		return "", errors.New(string(res.Body()))
 	}
 
 	return v.Result, nil
