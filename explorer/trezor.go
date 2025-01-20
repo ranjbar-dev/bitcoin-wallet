@@ -398,11 +398,11 @@ func (e *TrezorExplorer) GetTransactionByTxID(txID string) (models.Transaction, 
 
 func (e *TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 
-	url := fmt.Sprintf("%s/sendtx/%s", e.BaseURL, hex)
+	url := fmt.Sprintf("%s/sendtx/", e.BaseURL)
 
 	client := httpclient.NewHttpclient()
 
-	res, err := client.NewRequest().Get(url)
+	res, err := client.NewRequest().SetBody(map[string]interface{}{"hex": hex}).Post(url)
 	if err != nil {
 
 		return "", err
