@@ -402,7 +402,7 @@ func (e *TrezorExplorer) BroadcastTransaction(hex string) (string, error) {
 
 	client := httpclient.NewHttpclient()
 
-	res, err := client.NewRequest().SetBody(map[string]interface{}{"hex": hex}).Post(url)
+	res, err := client.NewRequest().SetBody(hex).Post(url)
 	if err != nil {
 
 		return "", err
