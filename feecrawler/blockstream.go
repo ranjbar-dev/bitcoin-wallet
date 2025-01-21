@@ -12,8 +12,8 @@ type BlockstreamCrawler struct {
 }
 
 type BlockStreamResponse struct {
-	Low    float64 `json:"144"`
-	Medium float64 `json:"25"`
+	Low    float64 `json:"25"`
+	Medium float64 `json:"10"`
 	High   float64 `json:"1"`
 }
 
