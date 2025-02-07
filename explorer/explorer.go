@@ -7,7 +7,7 @@ type Explorer interface {
 	GetAddressBalance(string) (int, error)
 	GetCurrentBlockNumber() (int, error)
 	GetCurrentBlockHash() (string, error)
-	GetBlockByNumber(int) (models.Block, error)
+	GetBlockByNumber(int, bool) (models.Block, error)
 	GetAddressUTXOs(string, int) ([]models.UTXO, error)
 	GetTransactionByTxID(string) (models.Transaction, error)
 	BroadcastTransaction(string) (string, error)

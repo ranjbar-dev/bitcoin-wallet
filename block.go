@@ -40,14 +40,15 @@ func FetchCurrentBlockHash() (string, error) {
 // Parameters:
 //
 //	num (int): The block number to fetch.
+//	withSleep (boolean): Wait for a short period before fetching the block.
 //
 // Returns:
 //
 //	models.Block: The block corresponding to the given number.
 //	error: An error object if an error occurs, otherwise nil.
-func FetchBlockByNumber(num int) (models.Block, error) {
+func FetchBlockByNumber(num int, withSleep bool) (models.Block, error) {
 
-	block, err := config.Explorer.GetBlockByNumber(num)
+	block, err := config.Explorer.GetBlockByNumber(num, withSleep)
 	if err != nil {
 
 		return models.Block{}, err

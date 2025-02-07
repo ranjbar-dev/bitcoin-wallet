@@ -180,7 +180,7 @@ func (e *BlockdaemonExplorer) GetCurrentBlockHash() (string, error) {
 	return res.String(), nil
 }
 
-func (e *BlockdaemonExplorer) GetBlockByNumber(num int) (models.Block, error) {
+func (e *BlockdaemonExplorer) GetBlockByNumber(num int, withSleep bool) (models.Block, error) {
 
 	headers := map[string]string{
 		"X-API-Key": e.ApiKey,
