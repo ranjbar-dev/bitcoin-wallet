@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	httpclient "github.com/ranjbar-dev/bitcoin-wallet/httpClient"
 	"github.com/ranjbar-dev/bitcoin-wallet/models"
@@ -162,7 +163,7 @@ func (e *TrezorExplorer) GetCurrentBlockHash() (string, error) {
 	return v.BlockHash, nil
 }
 
-func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
+func (e *TrezorExplorer) GetBlockByNumber(num int, withSleep bool) (models.Block, error) {
 
 	block := models.Block{}
 	var txs []models.Transaction
@@ -262,6 +263,11 @@ func (e *TrezorExplorer) GetBlockByNumber(num int) (models.Block, error) {
 		} else {
 
 			pageNumber++
+		}
+
+		if withSleep {
+
+			time.Sleep(time.Millisecond * 250)
 		}
 	}
 
