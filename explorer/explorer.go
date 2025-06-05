@@ -28,3 +28,12 @@ func NewBlockdaemonExplorer(network string, apiKey string) Explorer {
 		ApiKey:  apiKey,
 	}
 }
+
+func NewBlockstreamExplorer(network string, apiKey string) Explorer {
+
+	return &BlockstreamExplorer{
+		Network: network,
+		baseURL: "https://blockstream.info/api",
+		ApiKey:  apiKey,
+	}
+}
